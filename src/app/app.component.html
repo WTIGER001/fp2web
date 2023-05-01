@@ -1,1 +1,20 @@
-<router-outlet></router-outlet>
+
+<ng-container *ngIf="stage == 'not-connected'">
+    <h1>Not Connected</h1>
+</ng-container>
+<ng-container *ngIf="stage == 'connected-no-game'">
+    <app-choose-game class="centered"></app-choose-game>
+</ng-container>
+<ng-container *ngIf="stage == 'connected-no-player'">
+    <app-enter-player class="centered"></app-enter-player>
+</ng-container>
+<ng-container *ngIf="stage == 'connected'">
+    <app-home-page></app-home-page>
+    <!-- <router-outlet></router-outlet> -->
+</ng-container>
+<div class="overlay" *ngIf="disconnected">
+    <h1>Disconnected</h1>
+    <button>Reconnect?</button>
+</div>
+
+

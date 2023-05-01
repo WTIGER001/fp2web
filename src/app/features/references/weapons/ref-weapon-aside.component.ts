@@ -2,12 +2,12 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-character-skill-tile',
+  selector: 'app-ref-weapon-aside',
   standalone: true,
   imports: [CommonModule],
   template: `
     <p>
-      character-skill-tile works!
+      ref-weapon-aside works!
     </p>
   `,
   styles: [
@@ -18,6 +18,6 @@ import { CommonModule } from '@angular/common';
     `
   ]
 })
-export class CharacterSkillTileComponent {
+export class RefWeaponAsideComponent {
 
 }

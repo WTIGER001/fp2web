@@ -1,12 +1,14 @@
-import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-sidebar',
+  selector: 'app-character-tab',
   standalone: true,
   imports: [CommonModule],
   template: `
-    
+    <p>
+      character-tab works!
+    </p>
   `,
   styles: [
     `
@@ -16,6 +18,6 @@ import { Component } from '@angular/core';
     `
   ]
 })
-export class SidebarComponent {
+export class CharacterTabComponent {
 
 }

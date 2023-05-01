@@ -2,12 +2,12 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-choose-game-page',
+  selector: 'app-reference-tiles',
   standalone: true,
   imports: [CommonModule],
   template: `
     <p>
-      choose-game-page works!
+      reference-tiles works!
     </p>
   `,
   styles: [
@@ -18,6 +18,6 @@ import { CommonModule } from '@angular/common';
     `
   ]
 })
-export class ChooseGamePageComponent {
+export class ReferenceTilesComponent {
 
 }

@@ -33,6 +33,18 @@ $fp2web-theme: mat.define-light-theme((
 // that you are using.
 @include mat.all-component-themes($fp2web-theme);
 
+// FONTS
+
+@font-face {
+  font-family: 'copperplate_gothic_lightRg';
+  src: url('/assets/fonts/coprgtl-webfont.woff2') format('woff2'),
+       url('/assets/fonts/coprgtl-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+
+}
+
+
 /* You can add global styles to this file, and also import other style files */
 :root {
   --font-clr: #737780;
@@ -42,7 +54,7 @@ $fp2web-theme: mat.define-light-theme((
   --navbar-bg: #01161D;
   --backgroud-clr: #182835;
   --unused: #1C2E38;
-  --title-font: "Copperplate Gothic Bold", serif;
+  --title-font: "copperplate_gothic_lightRg", serif;
 }
 
 
@@ -57,8 +69,30 @@ body {
   display: grid;
 }
 
+h1, h2, h3 {
+  font-family: var(--title-font);
+  font-weight: 400;
+  margin: .5em 0;
+}
+
+label, p {
+  margin: 0;
+}
+
+h1 {
+  color: #a38c66;
+}
+
+h1.title {
+  text-align: center;
+  filter: drop-shadow(2px 2px 4px black);
+  margin-top: 0;
+}
+
 body {
   // background-image: url(/assets/bg3.jpg);
+  background-image: url(/assets/bg/background-3.webp);
+  background-size: cover;
 }
 
 main {
@@ -66,58 +100,57 @@ main {
   display: grid;
 }
 
-// .d_ur,
-// .d_bl,
-// .d_br,
-// .d_ul {
-//   background-image: url('/assets/dialog_corner_ur.png');
-//   background-repeat: no-repeat;
-//   width: 159px;
-//   height: 180px;
-//   z-index: 1;
-// }
+hr {
+  border-color: #9C6E4D;
+  border-width: 1px;
+  filter: drop-shadow(1px 1px 2px black);
+  margin-bottom: 1.5em;
+  width: 100%;
+}
 
-// .d_ul {
-//   transform: scaleX(-1);
-// }
+hr::before, 
+hr::after {
+  content: '';
+  height: 5px;
+  width: 5px;
+  background-color: #9C6E4D;
+  transform: rotate(45deg);
+}
 
-// .d_bl {
-//   transform: scale(-1, -1);
-// }
 
-// .d_br {
-//   transform: scaleY(-1);
-// }
+/* Utility */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0,0,0,.7);
+}
 
-// .d_b,
-// .d_u {
-//   background: url('/assets/dialog_h.png');
-//   background-repeat: repeat-x;
-//   z-index: 1;
-// }
+/* spacer text */
 
-// .d_b {
-//   transform: scaleY(-1);
-// }
+.lined {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.5em;
 
-// .d_l,
-// .d_r {
-//   background: url('/assets/dialog_v.png');
-//   background-repeat: repeat-y;
-//   background-position: 100%;
-//   z-index: 1;
-// }
+  .spacer {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: clip;
+    align-self: end;
+    justify-self: end;
+    width: 100%;
+  }
 
-// .d_l {
-//   transform: scaleX(-1);
-// }
+  h1, h2, h3, h4, h5, p {
+    margin: 0;
+  }
+}
 
-// .dialog_center {
-//   margin: -123px -106px;
-//   background-color: blue;
-//   text-align: center;
-  
-// }
+.lined-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
 
 /* HOME */
 
@@ -165,11 +198,10 @@ app-home-page {
   .tab {
     padding: 5px;
     display: grid;
-    gap: 1em;
-    font-size: 16pt;
+    gap: 0.2em;
+    font-size: 20pt;
     font-family: var(--title-font);
     grid-template-columns: auto 1fr auto;
-
   }
 
   .tab.active {
@@ -217,7 +249,103 @@ app-message-center {
   padding: 3px;
 }
 
+/* Dialog */
+.bottom-buttons {
+  margin-top: auto;
+  height: 2em;
+  display: flex;
+  flex-direction: row;
+  gap: 2em;
+  justify-content: center;
+  align-items: stretch;
 
+  button {
+    min-width: 150px;
+  }
+}
+
+/* Forms */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+
+  label {
+
+  }
+
+  input {
+    font-size: 14pt;
+    background-color: rgb(10 10 10/ 10%);
+    color: whitesmoke;
+    outline: 0;
+    border: 1px solid #83603f;
+    padding: .25em .5em;
+    border-radius: 5px;
+    filter: drop-shadow(1px 1px 2px black);
+    border: 1px solid darkslategrey;
+  }
+
+  .radios {
+    display: flex;
+    gap: 0.5em;
+    align-items: center;
+  }
+
+  .radio {
+    display: flex;
+    gap: 0.5em;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+@media screen and (min-width: 600px) {
+  
+}
+
+@media screen and (min-width: 1800px) {
+
+}
+
+app-home-tabs {
+  --mdc-tab-indicator-active-indicator-color: yellow;
+
+  
+  .mdc-tab {
+    min-width: 40px !important;
+    padding-right: 5px !important;
+    padding-left: 12px !important;
+    display: flex;
+    flex: 1 0 auto;
+    justify-content: center;
+    box-sizing: border-box;
+    margin: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    border: none;
+    outline: none;
+    text-align: center;
+    white-space: nowrap;
+    cursor: pointer;
+    -webkit-appearance: none;
+    z-index: 1;
+    background-color: #4e3726 !important;
+    margin-top: 3px !important;
+    margin-right: 3px !important;
+    clip-path: polygon(0 0,calc(100% - 20.00px) 0,100% 20.00px,100% 100%,0 100%)!important;
+  }
+
+  .tab {
+    padding: 5px;
+    display: grid;
+    gap: 0.2em;
+    font-size: 20pt;
+    font-family: var(--title-font);
+    grid-template-columns: auto 1fr auto;
+    color: whitesmoke;
+  }
+}
 
 /* MISC */
 img.imgfill{
@@ -225,6 +353,37 @@ img.imgfill{
   height: 100%;
   object-fit: cover;
 }
+
+app-frame3 {
+  button {
+    min-width: 64px;
+    filter: drop-shadow(1px 1px 2px black);
+    border-radius: 1000px;
+    text-align: center;
+    cursor: pointer;
+    background-color: #4E3726;
+    color: #F0D1AF;
+    padding: 0 1.5em;
+    outline: 0;
+    border: 0;
+  }
+
+  button.secondary {
+    background-color: #3E3C3F;
+  }
+
+  .form input {
+    font-size: 15pt;
+    padding: .5em;
+    font-family: var(--title-font);
+  }
+
+  .form label {
+    margin-top: .5em;
+  }
+}
+
+
 
 // mat-icon
 // {

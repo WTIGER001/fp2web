@@ -12,6 +12,7 @@ export enum ModelType {
   ModelType_Armor = 4,
   ModelType_Game = 5,
   ModelType_Player = 6,
+  ModelType_Picture = 7,
   ModelType_RefArmor = 50,
   ModelType_RefGameTerm = 51,
   ModelType_RefOrb = 52,
@@ -43,6 +44,9 @@ export function modelTypeFromJSON(object: any): ModelType {
     case 6:
     case "ModelType_Player":
       return ModelType.ModelType_Player;
+    case 7:
+    case "ModelType_Picture":
+      return ModelType.ModelType_Picture;
     case 50:
     case "ModelType_RefArmor":
       return ModelType.ModelType_RefArmor;
@@ -81,6 +85,8 @@ export function modelTypeToJSON(object: ModelType): string {
       return "ModelType_Game";
     case ModelType.ModelType_Player:
       return "ModelType_Player";
+    case ModelType.ModelType_Picture:
+      return "ModelType_Picture";
     case ModelType.ModelType_RefArmor:
       return "ModelType_RefArmor";
     case ModelType.ModelType_RefGameTerm:
@@ -1328,6 +1334,9 @@ export interface Fp2Message {
   BatchUpdateRequest: BatchUpdateRequest | undefined;
   DiceRollBroadcast: DiceRollBroadcast | undefined;
   DiceRollResponse: DiceRollResponse | undefined;
+  SetActiveGameRequest: SetActiveGameRequest | undefined;
+  GetPictureRequest: GetPictureRequest | undefined;
+  GetPictureResponse: GetPictureResponse | undefined;
 }
 
 export interface ErrorResponse {
@@ -1371,6 +1380,17 @@ export interface IDName {
   Name: string;
 }
 
+export interface GetPictureRequest {
+  ID: string;
+  Type: ModelType;
+  GameID: string;
+  Tag: string;
+}
+
+export interface GetPictureResponse {
+  Picture: Picture | undefined;
+}
+
 /**
  * Used to send multuple updates. Batched updates will delay the calculaiion
  * process until all updates have been saved and there will be only a single
@@ -1412,6 +1432,7 @@ export interface Model {
   Armor: Armor | undefined;
   Game: Game | undefined;
   Player: Player | undefined;
+  Picture: Picture | undefined;
   RefArmor: RefArmor | undefined;
   RefGameTerm: RefGameTerm | undefined;
   RefOrb: RefOrb | undefined;
@@ -1436,11 +1457,20 @@ export interface Character {
   DefensiveReactions: number;
   ManualModifications: Modification[];
   ManualRoll: boolean;
+  Token: string;
 }
 
 export interface Affinty {
   School: string;
   Points: number;
+}
+
+export interface Picture {
+  ID: string;
+  Type: ModelType;
+  GameID: string;
+  Tag: string;
+  Data: string;
 }
 
 export interface CharacterCreation {
@@ -1769,7 +1799,7 @@ export interface DieRollResult {
   Exploded: boolean;
   /** If the roll was rerolled */
   ReRolled: boolean;
-  /** Individual Die Values, only more than 1 on exploded */
+  /** Individual Die Values, only more than 1 on exploded, or Advantage */
   DieValues: number[];
 }
 
@@ -1877,8 +1907,13 @@ export interface GetActiveGameRequest {}
 
 export interface GetActiveGameResponse {
   Game: Game | undefined;
+  Players: Player[];
   Characters: Character[];
   Encounters: Encounter[];
+}
+
+export interface SetActiveGameRequest {
+  ID: string;
 }
 
 /**
@@ -1933,6 +1968,9 @@ function createBaseFp2Message(): Fp2Message {
     BatchUpdateRequest: undefined,
     DiceRollBroadcast: undefined,
     DiceRollResponse: undefined,
+    SetActiveGameRequest: undefined,
+    GetPictureRequest: undefined,
+    GetPictureResponse: undefined,
   };
 }
 
@@ -2067,6 +2105,24 @@ export const Fp2Message = {
         writer.uint32(234).fork()
       ).ldelim();
     }
+    if (message.SetActiveGameRequest !== undefined) {
+      SetActiveGameRequest.encode(
+        message.SetActiveGameRequest,
+        writer.uint32(242).fork()
+      ).ldelim();
+    }
+    if (message.GetPictureRequest !== undefined) {
+      GetPictureRequest.encode(
+        message.GetPictureRequest,
+        writer.uint32(250).fork()
+      ).ldelim();
+    }
+    if (message.GetPictureResponse !== undefined) {
+      GetPictureResponse.encode(
+        message.GetPictureResponse,
+        writer.uint32(258).fork()
+      ).ldelim();
+    }
     return writer;
   },
 
@@ -2182,6 +2238,24 @@ export const Fp2Message = {
             reader.uint32()
           );
           break;
+        case 30:
+          message.SetActiveGameRequest = SetActiveGameRequest.decode(
+            reader,
+            reader.uint32()
+          );
+          break;
+        case 31:
+          message.GetPictureRequest = GetPictureRequest.decode(
+            reader,
+            reader.uint32()
+          );
+          break;
+        case 32:
+          message.GetPictureResponse = GetPictureResponse.decode(
+            reader,
+            reader.uint32()
+          );
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -2255,6 +2329,15 @@ export const Fp2Message = {
         : undefined,
       DiceRollResponse: isSet(object.DiceRollResponse)
         ? DiceRollResponse.fromJSON(object.DiceRollResponse)
+        : undefined,
+      SetActiveGameRequest: isSet(object.SetActiveGameRequest)
+        ? SetActiveGameRequest.fromJSON(object.SetActiveGameRequest)
+        : undefined,
+      GetPictureRequest: isSet(object.GetPictureRequest)
+        ? GetPictureRequest.fromJSON(object.GetPictureRequest)
+        : undefined,
+      GetPictureResponse: isSet(object.GetPictureResponse)
+        ? GetPictureResponse.fromJSON(object.GetPictureResponse)
         : undefined,
     };
   },
@@ -2344,6 +2427,18 @@ export const Fp2Message = {
     message.DiceRollResponse !== undefined &&
       (obj.DiceRollResponse = message.DiceRollResponse
         ? DiceRollResponse.toJSON(message.DiceRollResponse)
+        : undefined);
+    message.SetActiveGameRequest !== undefined &&
+      (obj.SetActiveGameRequest = message.SetActiveGameRequest
+        ? SetActiveGameRequest.toJSON(message.SetActiveGameRequest)
+        : undefined);
+    message.GetPictureRequest !== undefined &&
+      (obj.GetPictureRequest = message.GetPictureRequest
+        ? GetPictureRequest.toJSON(message.GetPictureRequest)
+        : undefined);
+    message.GetPictureResponse !== undefined &&
+      (obj.GetPictureResponse = message.GetPictureResponse
+        ? GetPictureResponse.toJSON(message.GetPictureResponse)
         : undefined);
     return obj;
   },
@@ -2445,6 +2540,21 @@ export const Fp2Message = {
     message.DiceRollResponse =
       object.DiceRollResponse !== undefined && object.DiceRollResponse !== null
         ? DiceRollResponse.fromPartial(object.DiceRollResponse)
+        : undefined;
+    message.SetActiveGameRequest =
+      object.SetActiveGameRequest !== undefined &&
+      object.SetActiveGameRequest !== null
+        ? SetActiveGameRequest.fromPartial(object.SetActiveGameRequest)
+        : undefined;
+    message.GetPictureRequest =
+      object.GetPictureRequest !== undefined &&
+      object.GetPictureRequest !== null
+        ? GetPictureRequest.fromPartial(object.GetPictureRequest)
+        : undefined;
+    message.GetPictureResponse =
+      object.GetPictureResponse !== undefined &&
+      object.GetPictureResponse !== null
+        ? GetPictureResponse.fromPartial(object.GetPictureResponse)
         : undefined;
     return message;
   },
@@ -2989,6 +3099,149 @@ export const IDName = {
   },
 };
 
+function createBaseGetPictureRequest(): GetPictureRequest {
+  return { ID: "", Type: 0, GameID: "", Tag: "" };
+}
+
+export const GetPictureRequest = {
+  encode(
+    message: GetPictureRequest,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.ID !== "") {
+      writer.uint32(10).string(message.ID);
+    }
+    if (message.Type !== 0) {
+      writer.uint32(16).int32(message.Type);
+    }
+    if (message.GameID !== "") {
+      writer.uint32(26).string(message.GameID);
+    }
+    if (message.Tag !== "") {
+      writer.uint32(34).string(message.Tag);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetPictureRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetPictureRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.ID = reader.string();
+          break;
+        case 2:
+          message.Type = reader.int32() as any;
+          break;
+        case 3:
+          message.GameID = reader.string();
+          break;
+        case 4:
+          message.Tag = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetPictureRequest {
+    return {
+      ID: isSet(object.ID) ? String(object.ID) : "",
+      Type: isSet(object.Type) ? modelTypeFromJSON(object.Type) : 0,
+      GameID: isSet(object.GameID) ? String(object.GameID) : "",
+      Tag: isSet(object.Tag) ? String(object.Tag) : "",
+    };
+  },
+
+  toJSON(message: GetPictureRequest): unknown {
+    const obj: any = {};
+    message.ID !== undefined && (obj.ID = message.ID);
+    message.Type !== undefined && (obj.Type = modelTypeToJSON(message.Type));
+    message.GameID !== undefined && (obj.GameID = message.GameID);
+    message.Tag !== undefined && (obj.Tag = message.Tag);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<GetPictureRequest>, I>>(
+    object: I
+  ): GetPictureRequest {
+    const message = createBaseGetPictureRequest();
+    message.ID = object.ID ?? "";
+    message.Type = object.Type ?? 0;
+    message.GameID = object.GameID ?? "";
+    message.Tag = object.Tag ?? "";
+    return message;
+  },
+};
+
+function createBaseGetPictureResponse(): GetPictureResponse {
+  return { Picture: undefined };
+}
+
+export const GetPictureResponse = {
+  encode(
+    message: GetPictureResponse,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.Picture !== undefined) {
+      Picture.encode(message.Picture, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetPictureResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetPictureResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.Picture = Picture.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetPictureResponse {
+    return {
+      Picture: isSet(object.Picture)
+        ? Picture.fromJSON(object.Picture)
+        : undefined,
+    };
+  },
+
+  toJSON(message: GetPictureResponse): unknown {
+    const obj: any = {};
+    message.Picture !== undefined &&
+      (obj.Picture = message.Picture
+        ? Picture.toJSON(message.Picture)
+        : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<GetPictureResponse>, I>>(
+    object: I
+  ): GetPictureResponse {
+    const message = createBaseGetPictureResponse();
+    message.Picture =
+      object.Picture !== undefined && object.Picture !== null
+        ? Picture.fromPartial(object.Picture)
+        : undefined;
+    return message;
+  },
+};
+
 function createBaseBatchUpdateRequest(): BatchUpdateRequest {
   return { Updates: [] };
 }
@@ -3218,6 +3471,7 @@ function createBaseModel(): Model {
     Armor: undefined,
     Game: undefined,
     Player: undefined,
+    Picture: undefined,
     RefArmor: undefined,
     RefGameTerm: undefined,
     RefOrb: undefined,
@@ -3245,6 +3499,9 @@ export const Model = {
     }
     if (message.Player !== undefined) {
       Player.encode(message.Player, writer.uint32(50).fork()).ldelim();
+    }
+    if (message.Picture !== undefined) {
+      Picture.encode(message.Picture, writer.uint32(58).fork()).ldelim();
     }
     if (message.RefArmor !== undefined) {
       RefArmor.encode(message.RefArmor, writer.uint32(402).fork()).ldelim();
@@ -3292,6 +3549,9 @@ export const Model = {
         case 6:
           message.Player = Player.decode(reader, reader.uint32());
           break;
+        case 7:
+          message.Picture = Picture.decode(reader, reader.uint32());
+          break;
         case 50:
           message.RefArmor = RefArmor.decode(reader, reader.uint32());
           break;
@@ -3325,6 +3585,9 @@ export const Model = {
       Armor: isSet(object.Armor) ? Armor.fromJSON(object.Armor) : undefined,
       Game: isSet(object.Game) ? Game.fromJSON(object.Game) : undefined,
       Player: isSet(object.Player) ? Player.fromJSON(object.Player) : undefined,
+      Picture: isSet(object.Picture)
+        ? Picture.fromJSON(object.Picture)
+        : undefined,
       RefArmor: isSet(object.RefArmor)
         ? RefArmor.fromJSON(object.RefArmor)
         : undefined,
@@ -3357,6 +3620,10 @@ export const Model = {
       (obj.Game = message.Game ? Game.toJSON(message.Game) : undefined);
     message.Player !== undefined &&
       (obj.Player = message.Player ? Player.toJSON(message.Player) : undefined);
+    message.Picture !== undefined &&
+      (obj.Picture = message.Picture
+        ? Picture.toJSON(message.Picture)
+        : undefined);
     message.RefArmor !== undefined &&
       (obj.RefArmor = message.RefArmor
         ? RefArmor.toJSON(message.RefArmor)
@@ -3404,6 +3671,10 @@ export const Model = {
       object.Player !== undefined && object.Player !== null
         ? Player.fromPartial(object.Player)
         : undefined;
+    message.Picture =
+      object.Picture !== undefined && object.Picture !== null
+        ? Picture.fromPartial(object.Picture)
+        : undefined;
     message.RefArmor =
       object.RefArmor !== undefined && object.RefArmor !== null
         ? RefArmor.fromPartial(object.RefArmor)
@@ -3445,6 +3716,7 @@ function createBaseCharacter(): Character {
     DefensiveReactions: 0,
     ManualModifications: [],
     ManualRoll: false,
+    Token: "",
   };
 }
 
@@ -3507,6 +3779,9 @@ export const Character = {
     if (message.ManualRoll === true) {
       writer.uint32(120).bool(message.ManualRoll);
     }
+    if (message.Token !== "") {
+      writer.uint32(130).string(message.Token);
+    }
     return writer;
   },
 
@@ -3567,6 +3842,9 @@ export const Character = {
         case 15:
           message.ManualRoll = reader.bool();
           break;
+        case 16:
+          message.Token = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -3614,6 +3892,7 @@ export const Character = {
         ? object.ManualModifications.map((e: any) => Modification.fromJSON(e))
         : [],
       ManualRoll: isSet(object.ManualRoll) ? Boolean(object.ManualRoll) : false,
+      Token: isSet(object.Token) ? String(object.Token) : "",
     };
   },
 
@@ -3678,6 +3957,7 @@ export const Character = {
       obj.ManualModifications = [];
     }
     message.ManualRoll !== undefined && (obj.ManualRoll = message.ManualRoll);
+    message.Token !== undefined && (obj.Token = message.Token);
     return obj;
   },
 
@@ -3714,6 +3994,7 @@ export const Character = {
     message.ManualModifications =
       object.ManualModifications?.map((e) => Modification.fromPartial(e)) || [];
     message.ManualRoll = object.ManualRoll ?? false;
+    message.Token = object.Token ?? "";
     return message;
   },
 };
@@ -3775,6 +4056,94 @@ export const Affinty = {
     const message = createBaseAffinty();
     message.School = object.School ?? "";
     message.Points = object.Points ?? 0;
+    return message;
+  },
+};
+
+function createBasePicture(): Picture {
+  return { ID: "", Type: 0, GameID: "", Tag: "", Data: "" };
+}
+
+export const Picture = {
+  encode(
+    message: Picture,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.ID !== "") {
+      writer.uint32(10).string(message.ID);
+    }
+    if (message.Type !== 0) {
+      writer.uint32(16).int32(message.Type);
+    }
+    if (message.GameID !== "") {
+      writer.uint32(26).string(message.GameID);
+    }
+    if (message.Tag !== "") {
+      writer.uint32(34).string(message.Tag);
+    }
+    if (message.Data !== "") {
+      writer.uint32(794).string(message.Data);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): Picture {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePicture();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.ID = reader.string();
+          break;
+        case 2:
+          message.Type = reader.int32() as any;
+          break;
+        case 3:
+          message.GameID = reader.string();
+          break;
+        case 4:
+          message.Tag = reader.string();
+          break;
+        case 99:
+          message.Data = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): Picture {
+    return {
+      ID: isSet(object.ID) ? String(object.ID) : "",
+      Type: isSet(object.Type) ? modelTypeFromJSON(object.Type) : 0,
+      GameID: isSet(object.GameID) ? String(object.GameID) : "",
+      Tag: isSet(object.Tag) ? String(object.Tag) : "",
+      Data: isSet(object.Data) ? String(object.Data) : "",
+    };
+  },
+
+  toJSON(message: Picture): unknown {
+    const obj: any = {};
+    message.ID !== undefined && (obj.ID = message.ID);
+    message.Type !== undefined && (obj.Type = modelTypeToJSON(message.Type));
+    message.GameID !== undefined && (obj.GameID = message.GameID);
+    message.Tag !== undefined && (obj.Tag = message.Tag);
+    message.Data !== undefined && (obj.Data = message.Data);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<Picture>, I>>(object: I): Picture {
+    const message = createBasePicture();
+    message.ID = object.ID ?? "";
+    message.Type = object.Type ?? 0;
+    message.GameID = object.GameID ?? "";
+    message.Tag = object.Tag ?? "";
+    message.Data = object.Data ?? "";
     return message;
   },
 };
@@ -9382,7 +9751,7 @@ export const GetActiveGameRequest = {
 };
 
 function createBaseGetActiveGameResponse(): GetActiveGameResponse {
-  return { Game: undefined, Characters: [], Encounters: [] };
+  return { Game: undefined, Players: [], Characters: [], Encounters: [] };
 }
 
 export const GetActiveGameResponse = {
@@ -9392,6 +9761,9 @@ export const GetActiveGameResponse = {
   ): _m0.Writer {
     if (message.Game !== undefined) {
       Game.encode(message.Game, writer.uint32(10).fork()).ldelim();
+    }
+    for (const v of message.Players) {
+      Player.encode(v!, writer.uint32(18).fork()).ldelim();
     }
     for (const v of message.Characters) {
       Character.encode(v!, writer.uint32(34).fork()).ldelim();
@@ -9415,6 +9787,9 @@ export const GetActiveGameResponse = {
         case 1:
           message.Game = Game.decode(reader, reader.uint32());
           break;
+        case 2:
+          message.Players.push(Player.decode(reader, reader.uint32()));
+          break;
         case 4:
           message.Characters.push(Character.decode(reader, reader.uint32()));
           break;
@@ -9432,6 +9807,9 @@ export const GetActiveGameResponse = {
   fromJSON(object: any): GetActiveGameResponse {
     return {
       Game: isSet(object.Game) ? Game.fromJSON(object.Game) : undefined,
+      Players: Array.isArray(object?.Players)
+        ? object.Players.map((e: any) => Player.fromJSON(e))
+        : [],
       Characters: Array.isArray(object?.Characters)
         ? object.Characters.map((e: any) => Character.fromJSON(e))
         : [],
@@ -9445,6 +9823,13 @@ export const GetActiveGameResponse = {
     const obj: any = {};
     message.Game !== undefined &&
       (obj.Game = message.Game ? Game.toJSON(message.Game) : undefined);
+    if (message.Players) {
+      obj.Players = message.Players.map((e) =>
+        e ? Player.toJSON(e) : undefined
+      );
+    } else {
+      obj.Players = [];
+    }
     if (message.Characters) {
       obj.Characters = message.Characters.map((e) =>
         e ? Character.toJSON(e) : undefined
@@ -9470,10 +9855,68 @@ export const GetActiveGameResponse = {
       object.Game !== undefined && object.Game !== null
         ? Game.fromPartial(object.Game)
         : undefined;
+    message.Players = object.Players?.map((e) => Player.fromPartial(e)) || [];
     message.Characters =
       object.Characters?.map((e) => Character.fromPartial(e)) || [];
     message.Encounters =
       object.Encounters?.map((e) => Encounter.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+function createBaseSetActiveGameRequest(): SetActiveGameRequest {
+  return { ID: "" };
+}
+
+export const SetActiveGameRequest = {
+  encode(
+    message: SetActiveGameRequest,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.ID !== "") {
+      writer.uint32(10).string(message.ID);
+    }
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): SetActiveGameRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseSetActiveGameRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.ID = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): SetActiveGameRequest {
+    return {
+      ID: isSet(object.ID) ? String(object.ID) : "",
+    };
+  },
+
+  toJSON(message: SetActiveGameRequest): unknown {
+    const obj: any = {};
+    message.ID !== undefined && (obj.ID = message.ID);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<SetActiveGameRequest>, I>>(
+    object: I
+  ): SetActiveGameRequest {
+    const message = createBaseSetActiveGameRequest();
+    message.ID = object.ID ?? "";
     return message;
   },
 };
