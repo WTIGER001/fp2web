@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MatTabsModule } from '@angular/material/tabs';
 import { Frame3Component } from 'src/app/controls/frame3.component';
 import { HomeService, TabDescriptor } from 'src/app/home.service';
+import { ModelUtil } from 'src/app/model-util';
 import { Game } from 'src/app/modelp/models';
 import { ServerService } from 'src/app/server.service';
 
@@ -26,8 +27,9 @@ import { ServerService } from 'src/app/server.service';
   styles: [
     `
       :host {
-        display: block;
-        padding: 1em;
+        display: grid;
+        // padding: 1em;
+        min-width: 500px;
       }
     `
   ]
@@ -53,12 +55,15 @@ export class GameTabComponent {
   }
 
   createNewCharacter() {
+    const time = new Date().getTime()
+    const id = "new-character-" + time
     const tab : TabDescriptor = {
       type: "character", 
       imageType: 'svg',
-      image: "new", 
-      id: "new-character", 
-      name: "New Character"
+      image: "viking-helmet", 
+      id: id , 
+      name: "New Character", 
+      data : ModelUtil.NewCharacter()
     }
 
     this.home.Open(tab)

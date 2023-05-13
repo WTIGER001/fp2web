@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, firstValueFrom } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { v4 as uuidv4 } from 'uuid';
 import { Armor, Character, ErrorResponse, Fp2Message, Game, GetActiveGameResponse, IDName, Model, ModelType, Orb, Picture, Player, RefArmor, RefGameTerm, RefOrb, RefSkill, RefWeapon, UpdateType, Weapon } from './modelp/models';
@@ -282,6 +282,10 @@ class ModelCrud<T> {
       UpdateReason: 0
     }
     this.svc.Send(msg)
+  }
+
+  async GetNow(id  : string) : Promise<T | undefined | ErrorResponse> {
+    return await firstValueFrom(this.Get(id))
   }
 
   Get(id  : string) : Observable<T | ErrorResponse | undefined> {

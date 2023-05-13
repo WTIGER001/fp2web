@@ -41,7 +41,14 @@ $fp2web-theme: mat.define-light-theme((
        url('/assets/fonts/coprgtl-webfont.woff') format('woff');
   font-weight: normal;
   font-style: normal;
+}
 
+@font-face {
+  font-family: 'papyrus';
+  src: url('/assets/fonts/papyrus-webfont.woff2') format('woff2'),
+       url('/assets/fonts/papyrus-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
 }
 
 
@@ -55,13 +62,20 @@ $fp2web-theme: mat.define-light-theme((
   --backgroud-clr: #182835;
   --unused: #1C2E38;
   --title-font: "copperplate_gothic_lightRg", serif;
-}
+  --serif-font: "papyrus", serif;
+  --accent-bg: #83603f;
+  --accent-clr: rgb(245, 245, 245);
 
+  --filter-sm: drop-shadow(1px 1px 2px black);
+  --filter-lg: drop-shadow(2px 2px 4px black);
+
+  --page-bg: url(/assets/bg_v.jpeg)
+}
 
 html, body { height: 100%; }
 body { 
   margin: 0; 
-  font-family: Roboto, "Helvetica Neue", sans-serif; 
+  font-family: papyrus, "Helvetica Neue", sans-serif; 
   min-width: 100%;
   min-height: 100vh;
   background-color: var(--backgroud-clr);
@@ -81,6 +95,7 @@ label, p {
 
 h1 {
   color: #a38c66;
+  text-align: center;
 }
 
 h1.title {
@@ -125,6 +140,26 @@ hr::after {
   background-color: rgba(0,0,0,.7);
 }
 
+::-moz-selection { /* Code for Firefox */
+  color: antiquewhite;
+  background: #4E3726;
+}
+
+::selection {
+  color: antiquewhite;
+  background: #4E3726;
+}
+
+button:active:hover {
+  transform: translate(1px, 1px);
+}
+
+.centered {
+  display: flex;
+  justify-content: center;
+}
+
+
 /* spacer text */
 
 .lined {
@@ -139,10 +174,28 @@ hr::after {
     align-self: end;
     justify-self: end;
     width: 100%;
+    margin-bottom: 3px;
+    min-height: 10px;
+    position: relative;
+  }
+
+  .spacer::after {
+    content: ". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ";
+    position: absolute;
+    left: 0;
+    bottom: 0;
   }
 
   h1, h2, h3, h4, h5, p {
     margin: 0;
+  }
+
+  h2 {
+    font-size: 18pt;
+  }
+
+  button {
+    margin-bottom: 6px;
   }
 }
 
@@ -151,6 +204,19 @@ hr::after {
   flex-direction: column;
   gap: 1em;
 }
+
+/* OVERRIDES */
+
+input[type="number"] {
+  -webkit-appearance: textfield;
+     -moz-appearance: textfield;
+          appearance: textfield;
+}
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none;
+}
+
 
 /* HOME */
 
@@ -165,7 +231,6 @@ app-home-page {
     color: var(--font-clr);
     display: flex;
     flex-direction: row;
-    margin-right: 8px;
 
     ul {
       width: 50px;
@@ -252,28 +317,45 @@ app-message-center {
 /* Dialog */
 .bottom-buttons {
   margin-top: auto;
-  height: 2em;
   display: flex;
   flex-direction: row;
-  gap: 2em;
+  flex-wrap: wrap;
+  
+  column-gap: 2em;
+  row-gap: 1em;
   justify-content: center;
   align-items: stretch;
 
   button {
     min-width: 150px;
+    height: 2em;
   }
 }
 
 /* Forms */
+.labeled {
+  display: grid;
+  align-items: center;
+  justify-content: center;
+
+  label {
+    text-align: center;
+  }
+
+}
+
 .form {
   display: flex;
   flex-direction: column;
   gap: 0.5em;
 
   label {
-
+    color: antiquewhite;
+    font-size: 13pt;
+    margin-top: .5em;
   }
 
+  label.mod,
   input {
     font-size: 14pt;
     background-color: rgb(10 10 10/ 10%);
@@ -284,6 +366,7 @@ app-message-center {
     border-radius: 5px;
     filter: drop-shadow(1px 1px 2px black);
     border: 1px solid darkslategrey;
+    font-family: var(--serif-font);
   }
 
   .radios {
@@ -307,6 +390,9 @@ app-message-center {
 @media screen and (min-width: 1800px) {
 
 }
+
+
+
 
 app-home-tabs {
   --mdc-tab-indicator-active-indicator-color: yellow;
@@ -374,13 +460,10 @@ app-frame3 {
 
   .form input {
     font-size: 15pt;
-    padding: .5em;
-    font-family: var(--title-font);
+    padding: .25em;
+    // font-family: var(--title-font);
   }
 
-  .form label {
-    margin-top: .5em;
-  }
 }
 
 

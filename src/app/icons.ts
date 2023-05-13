@@ -74,4 +74,5 @@ export const SvgIcons: any = {
     'classes-priest': '/assets/icons/classes-priest.svg',
     'classes-thief': '/assets/icons/classes-thief.svg',
     'effect-circle': '/assets/icons/effect-circle.svg',
+    'chevron' : '/assets/icons/chevron.svg'
 }

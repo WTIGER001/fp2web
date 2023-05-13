@@ -27,7 +27,7 @@ export class HomeService {
 
     const found = next.findIndex(tab => tab.type == t.type && tab.id == t.id)
     if (found >=0 ) {
-      next.splice(found)
+      next.splice(found,1)
       this.openSub$.next(next)
     }
   }
@@ -48,4 +48,7 @@ export interface TabDescriptor  {
   name : string
   type : string
   id : string
+  element ?: HTMLElement
+  active ?: boolean
+  data ?: any
 }

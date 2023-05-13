@@ -323,6 +323,7 @@ export enum PrimaryAttributeVal {
   PrimaryAttributeVal_ATTR = 8,
   PrimaryAttributeVal_ESS = 9,
   PrimaryAttributeVal_PER = 10,
+  PrimaryAttributeVal_EMP = 11,
   UNRECOGNIZED = -1,
 }
 
@@ -361,6 +362,9 @@ export function primaryAttributeValFromJSON(object: any): PrimaryAttributeVal {
     case 10:
     case "PrimaryAttributeVal_PER":
       return PrimaryAttributeVal.PrimaryAttributeVal_PER;
+    case 11:
+    case "PrimaryAttributeVal_EMP":
+      return PrimaryAttributeVal.PrimaryAttributeVal_EMP;
     case -1:
     case "UNRECOGNIZED":
     default:
@@ -392,6 +396,8 @@ export function primaryAttributeValToJSON(object: PrimaryAttributeVal): string {
       return "PrimaryAttributeVal_ESS";
     case PrimaryAttributeVal.PrimaryAttributeVal_PER:
       return "PrimaryAttributeVal_PER";
+    case PrimaryAttributeVal.PrimaryAttributeVal_EMP:
+      return "PrimaryAttributeVal_EMP";
     case PrimaryAttributeVal.UNRECOGNIZED:
     default:
       return "UNRECOGNIZED";
@@ -1578,6 +1584,7 @@ export interface CharacterAttributes {
   ATTR: PrimaryAttribute | undefined;
   ESS: PrimaryAttribute | undefined;
   PER: PrimaryAttribute | undefined;
+  EMP: PrimaryAttribute | undefined;
   Mana: ConsumableAttribute | undefined;
   Stamina: ConsumableAttribute | undefined;
   Initiative: CalculatedValue | undefined;
@@ -5477,6 +5484,7 @@ function createBaseCharacterAttributes(): CharacterAttributes {
     ATTR: undefined,
     ESS: undefined,
     PER: undefined,
+    EMP: undefined,
     Mana: undefined,
     Stamina: undefined,
     Initiative: undefined,
@@ -5519,28 +5527,31 @@ export const CharacterAttributes = {
     if (message.PER !== undefined) {
       PrimaryAttribute.encode(message.PER, writer.uint32(82).fork()).ldelim();
     }
+    if (message.EMP !== undefined) {
+      PrimaryAttribute.encode(message.EMP, writer.uint32(90).fork()).ldelim();
+    }
     if (message.Mana !== undefined) {
       ConsumableAttribute.encode(
         message.Mana,
-        writer.uint32(90).fork()
+        writer.uint32(98).fork()
       ).ldelim();
     }
     if (message.Stamina !== undefined) {
       ConsumableAttribute.encode(
         message.Stamina,
-        writer.uint32(98).fork()
+        writer.uint32(106).fork()
       ).ldelim();
     }
     if (message.Initiative !== undefined) {
       CalculatedValue.encode(
         message.Initiative,
-        writer.uint32(106).fork()
+        writer.uint32(114).fork()
       ).ldelim();
     }
     if (message.Awarness !== undefined) {
       CalculatedValue.encode(
         message.Awarness,
-        writer.uint32(114).fork()
+        writer.uint32(122).fork()
       ).ldelim();
     }
     return writer;
@@ -5584,15 +5595,18 @@ export const CharacterAttributes = {
           message.PER = PrimaryAttribute.decode(reader, reader.uint32());
           break;
         case 11:
-          message.Mana = ConsumableAttribute.decode(reader, reader.uint32());
+          message.EMP = PrimaryAttribute.decode(reader, reader.uint32());
           break;
         case 12:
-          message.Stamina = ConsumableAttribute.decode(reader, reader.uint32());
+          message.Mana = ConsumableAttribute.decode(reader, reader.uint32());
           break;
         case 13:
-          message.Initiative = CalculatedValue.decode(reader, reader.uint32());
+          message.Stamina = ConsumableAttribute.decode(reader, reader.uint32());
           break;
         case 14:
+          message.Initiative = CalculatedValue.decode(reader, reader.uint32());
+          break;
+        case 15:
           message.Awarness = CalculatedValue.decode(reader, reader.uint32());
           break;
         default:
@@ -5634,6 +5648,9 @@ export const CharacterAttributes = {
         : undefined,
       PER: isSet(object.PER)
         ? PrimaryAttribute.fromJSON(object.PER)
+        : undefined,
+      EMP: isSet(object.EMP)
+        ? PrimaryAttribute.fromJSON(object.EMP)
         : undefined,
       Mana: isSet(object.Mana)
         ? ConsumableAttribute.fromJSON(object.Mana)
@@ -5691,6 +5708,10 @@ export const CharacterAttributes = {
     message.PER !== undefined &&
       (obj.PER = message.PER
         ? PrimaryAttribute.toJSON(message.PER)
+        : undefined);
+    message.EMP !== undefined &&
+      (obj.EMP = message.EMP
+        ? PrimaryAttribute.toJSON(message.EMP)
         : undefined);
     message.Mana !== undefined &&
       (obj.Mana = message.Mana
@@ -5754,6 +5775,10 @@ export const CharacterAttributes = {
     message.PER =
       object.PER !== undefined && object.PER !== null
         ? PrimaryAttribute.fromPartial(object.PER)
+        : undefined;
+    message.EMP =
+      object.EMP !== undefined && object.EMP !== null
+        ? PrimaryAttribute.fromPartial(object.EMP)
         : undefined;
     message.Mana =
       object.Mana !== undefined && object.Mana !== null

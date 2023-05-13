@@ -51,7 +51,7 @@ import { Component } from '@angular/core';
       .ul {
         height: 100px;
         width: 99px;
-
+        pointer-events:none;
       }
 
       .bl {
@@ -62,6 +62,10 @@ import { Component } from '@angular/core';
       }
       .ur {
         transform: scale(-1, 1)
+      }
+
+      .l_s, .l {
+        pointer-events:none;
       }
 
       .l_s img, 
@@ -75,6 +79,7 @@ import { Component } from '@angular/core';
       .r {
         display: flex;
         justify-content: flex-end;
+        pointer-events:none;
       }
       .r_s img,
       .r img {
@@ -87,11 +92,13 @@ import { Component } from '@angular/core';
       .b {
         display: flex;
         align-items: flex-end;
+        pointer-events:none;
       }
 
       .t_s, 
       .t {
         display: grid;
+        pointer-events:none;
       }
       
       .t_s img, 
@@ -120,6 +127,7 @@ import { Component } from '@angular/core';
         background-size: cover;
         inset: 20px;
         z-index: -1;
+        pointer-events:none;
       }
 
 

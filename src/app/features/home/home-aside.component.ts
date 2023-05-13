@@ -17,6 +17,8 @@ import { ServerService, isErrorResponse } from 'src/app/server.service';
         <mat-icon svgIcon="viking-helmet" *ngIf="c.imageType == 'svg'"></mat-icon>
         <img class="aside-token" [src]="c.image" *ngIf="c.imageType == 'png'">
       </li>
+      <li (click)="openTest()"><mat-icon svgIcon="classes-alchemist"></mat-icon></li>
+
     </ul>  
   </aside>
   `, styles: [
@@ -92,4 +94,16 @@ export class HomeAsideComponent {
     this.home.Open(t)
   }
 
+  openTest() {
+    this.test++
+    const t : TabDescriptor = {
+      id: "test" + this.test,
+      type: "skill",
+      image: "skill-spell-book", 
+      imageType: "svg",
+      name: "Game"
+    }
+    this.home.Open(t)
+  }
+  test = 1
 }
